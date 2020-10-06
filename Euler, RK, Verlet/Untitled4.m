@@ -1,0 +1,41 @@
+%% Control3_2
+
+close all
+clear all
+clc
+
+%% Datos iniciales
+
+numex = 5000; %número de partículas
+N = 20; %número de saltos
+
+deltaE = 4.67e-21; %J
+k = 1.38e-23; %J/K
+T = 351; %K
+xjump = 0.36; %nm %distancia de salto
+xl = 2.88; %nm %límite
+
+%Probabilidad
+p1 = 0.5*exp(-deltaE/k/T);
+p2 = 0.5*exp(-deltaE/k/T);
+p3 = 1-p1-p2;
+
+pp = cumsum([p1 p2 p3]);
+ra = rand(N,numex);
+
+x = (-((ra<=pp(1)) & (ra<pp(2))) + ((ra>pp(2)) & (ra<pp(3))))*xjump;
+
+if x<=abs(xl)
+    x = x;
+elseif x>xl
+    x = -(((ra<=pp(1)) & (ra<pp(2))))*xjump;
+elseif x<-xl
+    x = (((ra>pp(2)) & (ra<pp(3))))*xjump;
+end
+    
+xx = cumsum(x);
+
+plot(xx(end,:),'o')
+title('Posición final a x=0 de partículas con probabilidad aleatoria')
+xlabel('Número de la partícula')
+ylabel('Posición final a x=0 [nm]')
